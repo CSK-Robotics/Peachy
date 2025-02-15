@@ -12,6 +12,7 @@ import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.MecanumDrive;
 
 /** This is a demo program showing how to use Mecanum control with the MecanumDrive class. */
@@ -24,7 +25,7 @@ public class Robot extends TimedRobot {
   private static final int kJoystickChannel = 0;
 
   private MecanumDrive m_robotDrive;
-  private Joystick m_stick;
+  private XboxController m_stick;
 
   @Override
   public void robotInit() {
@@ -46,7 +47,7 @@ public class Robot extends TimedRobot {
 
     m_robotDrive = new MecanumDrive(frontLeft::set, rearLeft::set, frontRight::set, rearRight::set);
 
-    m_stick = new Joystick(kJoystickChannel);
+    m_stick = new XboxController(kJoystickChannel);
 
     UsbCamera camera = CameraServer.startAutomaticCapture();
     camera.setResolution(640, 480);
@@ -57,6 +58,6 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     // Use the joystick Y axis for forward movement, X axis for lateral
     // movement, and Z axis for rotation.
-    m_robotDrive.driveCartesian(-m_stick.getX(), m_stick.getY(), m_stick.getZ());
+    m_robotDrive.driveCartesian(-m_stick.getRightX(), m_stick.getRightY(), 0);
   }
 }
