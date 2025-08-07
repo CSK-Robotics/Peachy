@@ -4,8 +4,12 @@
 
 package frc.robot;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.cscore.UsbCamera;
@@ -29,10 +33,10 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
-    CANSparkMax frontLeft = new CANSparkMax(kFrontLeftChannel, MotorType.kBrushless);
-    CANSparkMax rearLeft = new CANSparkMax(kRearLeftChannel, MotorType.kBrushless);
-    CANSparkMax frontRight = new CANSparkMax(kFrontRightChannel, MotorType.kBrushless);
-    CANSparkMax rearRight = new CANSparkMax(kRearRightChannel, MotorType.kBrushless);
+    SparkMax frontLeft = new SparkMax(kFrontLeftChannel, MotorType.kBrushless);
+    SparkMax rearLeft = new SparkMax(kRearLeftChannel, MotorType.kBrushless);
+    SparkMax frontRight = new SparkMax(kFrontRightChannel, MotorType.kBrushless);
+    SparkMax rearRight = new SparkMax(kRearRightChannel, MotorType.kBrushless);                                                                                                                                                                          
 
     SendableRegistry.addChild(m_robotDrive, frontLeft);
     SendableRegistry.addChild(m_robotDrive, rearLeft);
@@ -41,9 +45,15 @@ public class Robot extends TimedRobot {
 
     // Invert the right side motors.
     // You may need to change or remove this to match your robot.
-    frontRight.setInverted(true);
-    rearRight.setInverted(true);
-    rearLeft.setInverted(true);
+    SparkMaxConfig config = new SparkMaxConfig();
+
+    config
+        .inverted(true)
+        .idleMode(IdleMode.kBrake);
+
+    frontRight.configure(config,ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    rearRight.configure(config,ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    rearLeft.configure(config,ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     m_robotDrive = new MecanumDrive(frontLeft::set, rearLeft::set, frontRight::set, rearRight::set);
 
@@ -58,6 +68,6 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     // Use the joystick Y axis for forward movement, X axis for lateral
     // movement, and Z axis for rotation.
-    m_robotDrive.driveCartesian(-m_stick.getRightX(), m_stick.getRightY(), 0);
+    m_robotDrive.driveCartesian(-m_stick.getRightX(), m_stick.getRightY(), m_stick.getLeftX());
   }
 }
